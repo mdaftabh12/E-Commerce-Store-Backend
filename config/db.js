@@ -3,11 +3,10 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const mongo_uri =
-  `${process.env.MONGO_URI}/${process.env.DB_NAME}` ||
-  "mongodb://127.0.0.1:27017/aftabStore";
+const mongo_uri = `${process.env.MONGO_URI}/${process.env.DB_NAME}`;
 
-  console.log(mongo_uri);
+console.log(mongo_uri);
+
 const connectDB = async () => {
   try {
     await mongoose

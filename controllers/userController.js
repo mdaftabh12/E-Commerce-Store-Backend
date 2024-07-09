@@ -8,6 +8,7 @@ import createToken from "../utils/createToken.js";
 const createUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
   if (!username || !email || !password) {
+    res.status(400);
     throw new Error("Please fill all the inputs.");
   }
 
