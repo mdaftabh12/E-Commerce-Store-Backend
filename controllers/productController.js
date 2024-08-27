@@ -1,34 +1,54 @@
 import asyncHandler from "../middlewares/asyncHandler.js";
 import Product from "../models/productModel.js";
+import {
+  uploadOnCloudinary,
+  deleteFromCloudinary,
+} from "../utils/cloudinary.js";
 
 //===========  Add Product  ===========//
 
 const addProduct = asyncHandler(async (req, res) => {
   try {
-    const { name, description, price, category, quantity, brand } = req.fields;
+    const { name, description, price, category, quantity, brand } = req.body;
 
-    // Validation
     switch (true) {
       case !name:
-        return res.json({ error: "Name is required" });
+        return res.status(400).json({ error: "Name is required" });
       case !description:
-        return res.json({ error: "Description is required" });
+        return res.status(400).json({ error: "Description is required" });
       case !price:
-        return res.json({ error: "Price is required" });
+        return res.status(400).json({ error: "Price is required" });
       case !category:
-        return res.json({ error: "Category is required" });
+        return res.status(400).json({ error: "Category is required" });
       case !quantity:
-        return res.json({ error: "Quantity is required" });
+        return res.status(400).json({ error: "Quantity is required" });
       case !brand:
-        return res.json({ error: "Brand is required" });
+        return res.status(400).json({ error: "Brand is required" });
     }
 
-    const product = new Product({ ...req.fields });
+    let imageUrl = "";
+    if (req.file) {
+      const result = await uploadOnCloudinary(req.file.path);
+      imageUrl = result?.secure_url;
+    } else {
+      return res.status(400).json({ error: "Image is required" });
+    }
+
+    const product = new Product({
+      name,
+      description,
+      price,
+      category,
+      quantity,
+      brand,
+      image: imageUrl,
+    });
+
     await product.save();
-    res.json(product);
+    res.status(201).json(product);
   } catch (error) {
     console.error(error);
-    res.status(400).json(error.message);
+    res.status(400).json({ message: error.message });
   }
 });
 

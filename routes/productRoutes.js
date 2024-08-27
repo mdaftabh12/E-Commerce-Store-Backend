@@ -14,14 +14,16 @@ import {
   fetchTopProducts,
   fetchNewProducts,
 } from "../controllers/productController.js";
-
+import upload from "../middlewares/multer.js";
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
 import checkId from "../middlewares/checkId.js";
 
-router
-  .route("/")
-  .get(fetchProducts)
-  .post(authenticate, authorizeAdmin, formidable(), addProduct);
+router.route("/").get(fetchProducts).post(
+  authenticate,
+  authorizeAdmin,
+  upload.single("image"), // Handle file upload with multer
+  addProduct
+);
 
 router.route("/allProducts").get(fetchAllProducts);
 router
